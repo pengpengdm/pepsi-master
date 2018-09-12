@@ -1,0 +1,27 @@
+package com.pepsi.rabbitmq.exchange.topic;
+
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+
+/**
+ * @author pepsi
+ * @version 1.0
+ * @date 2018/09/12
+ * describe:
+ */
+
+public class Receiver {
+
+    @RabbitListener(queues = "#{queue01.name}")
+    public void receive1(String in) {
+        receive(in, 1);
+    }
+
+    @RabbitListener(queues = "#{queue02.name}")
+    public void receive2(String in)  {
+        receive(in, 2);
+    }
+
+    public void receive(String in, int receiver) {
+        System.out.println("instance " + receiver + " [x] Received '" + in + "'");
+    }
+}
