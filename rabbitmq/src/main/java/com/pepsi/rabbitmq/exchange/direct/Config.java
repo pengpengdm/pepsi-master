@@ -21,24 +21,24 @@ import javax.annotation.PostConstruct;
 public class Config {
 
     @PostConstruct
-    public  void pepsi(){
+    public  void pepsi() {
         System.out.println("初始化 direct Config");
     }
 
     @Bean
-    public Queue queue(){
+    public Queue queue() {
         String quque = "direct.quque";
         return new Queue(quque);
     }
 
     @Bean
-    public DirectExchange exchange(){
+    public DirectExchange exchange() {
         String exchange = "direct.exchange";
         return new DirectExchange(exchange);
     }
 
     @Bean
-    public Binding bind(DirectExchange exchange,Queue queue){
+    public Binding bind(DirectExchange exchange,Queue queue) {
         String routeKey = "direct";
         return BindingBuilder.bind(queue).to(exchange).with(routeKey);
     }
