@@ -34,5 +34,9 @@ public class Receiver {
     }
 
 
-
+    public static void main(String[] args) {
+        String bun = "1234.5.6";
+        System.out.println(bun.substring(0, !bun.contains(".") ?bun.length():bun.indexOf(".")));
+        System.out.println(">>>>"+bun.indexOf("."));
+    }
 }

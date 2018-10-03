@@ -27,13 +27,13 @@ public class Config {
 
     @Bean
     public Queue queue() {
-        String quque = "direct.quque";
+        String quque = "direct.quque.onstar.pepsi";
         return new Queue(quque);
     }
 
     @Bean
     public DirectExchange exchange() {
-        String exchange = "direct.exchange";
+        String exchange = "direct.exchange.onstar.pepsi";
         return new DirectExchange(exchange);
     }
 
