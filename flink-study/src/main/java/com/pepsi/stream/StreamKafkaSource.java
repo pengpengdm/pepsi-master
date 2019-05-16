@@ -15,7 +15,7 @@ import java.util.Properties;
  * Date: 2019-05-16 11:33
  * Description: kafka作为源
  */
-public class StreamKafka {
+public class StreamKafkaSource {
 
     public static void main(String[] args) throws Exception {
 
@@ -29,21 +29,21 @@ public class StreamKafka {
         env.getCheckpointConfig().setMaxConcurrentCheckpoints(1);
         env.getCheckpointConfig().enableExternalizedCheckpoints(CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
 
-        String topic = "";
-        Properties properties = new Properties();
+        String topic = "hellokafka";
+        Properties props = new Properties();
 
-        properties.setProperty("bootstrap.servers","hadoop110:9092");
-        properties.setProperty("","");
+        props.put("bootstrap.servers","118.24.100.168:9092");
+        props.put("group.id", "groupId");
+        props.put("enable.auto.commit", "true");
 
-        FlinkKafkaConsumer011<String> consumer = new FlinkKafkaConsumer011<>(topic, new SimpleStringSchema(), properties);
+        FlinkKafkaConsumer011<String> consumer = new FlinkKafkaConsumer011<>(topic, new SimpleStringSchema(), props);
         consumer.setStartFromGroupOffsets();//默认消费策略
 
         DataStreamSource<String> text = env.addSource(consumer);
 
         text.print().setParallelism(1);
 
-        env.execute("StreamKafka");
+        env.execute("StreamKafkaSource");
 
     }
-
 }
