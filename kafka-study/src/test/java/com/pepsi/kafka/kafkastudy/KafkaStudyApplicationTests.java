@@ -55,4 +55,23 @@ public class KafkaStudyApplicationTests {
         }
     }
 
+
+    @Test
+    public void sender(){
+        int sendCount=0;
+        for (;;){
+            sendCount++;
+            String msg = "hello,myflink，second send,this is "+sendCount+" data";
+            ProducerRecord<String, String> record = new ProducerRecord<>("hellokafka",msg);
+            producer.send(record);
+            if(sendCount%10==0){
+                System.out.println("send sendCount="+sendCount);
+            }
+            if(sendCount>100){
+                break;
+            }
+
+        }
+
+    }
 }
