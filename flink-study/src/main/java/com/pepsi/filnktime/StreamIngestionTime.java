@@ -7,4 +7,11 @@ package com.pepsi.filnktime;
  * Description: 摄取时间
  */
 public class StreamIngestionTime {
+
+    public static void main(String[] args) {
+
+    }
 }
+
+
+

@@ -2,12 +2,10 @@ package com.pepsi.stream;
 
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
-import org.apache.flink.streaming.api.CheckpointingMode;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
-import org.apache.flink.streaming.api.environment.CheckpointConfig;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer011;
+import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer010;
 import org.apache.flink.streaming.util.serialization.KeyedSerializationSchemaWrapper;
 
 import java.util.ArrayList;
@@ -41,7 +39,7 @@ public class StreamingKafkaSink {
         Properties prop = new Properties();
         prop.setProperty("bootstrap.servers","118.24.100.168:9092");
 
-        FlinkKafkaProducer011<String> myProducer = new FlinkKafkaProducer011<>("hellokafka", new KeyedSerializationSchemaWrapper<>(new SimpleStringSchema()), prop, FlinkKafkaProducer011.Semantic.EXACTLY_ONCE);
+        FlinkKafkaProducer010<String> myProducer = new FlinkKafkaProducer010<String>("hellokafka", new KeyedSerializationSchemaWrapper<>(new SimpleStringSchema()), prop);
         outputStreamOperator.addSink(myProducer);
         env.execute("StreamingFromCollection");
 
