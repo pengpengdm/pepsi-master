@@ -1,6 +1,7 @@
 package com.pepsi.nglog.dto;
 
-import lombok.Data;
+import com.pepsi.util.PepsiUtil;
+import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonSetter;
 
 import java.io.Serializable;
 
@@ -10,7 +11,6 @@ import java.io.Serializable;
  * Date: 2019-06-29 22:32
  * Description: No Description
  */
-@Data
 public class RichNginxLog  implements Serializable {
 
     /**
@@ -79,5 +79,70 @@ public class RichNginxLog  implements Serializable {
         return timestamp;
     }
 
+    @JsonSetter(value = "@timestamp")
+    public void setTimestamp(String value) {
+        if (value != null && !value.isEmpty()) {
+            // 目前数据上报有几种格式
+            int len = value.length();
+            switch (len) {
+                case 20: // e.g. 2019-06-18T17:25:00Z
+                case 25: // e.g. 2019-06-18T17:25:00+08:00
+                    this.timestamp = PepsiUtil.parseIsoTimestamp(value);
+                    break;
+                case 24: // e.g. 2019-06-18T09:25:02.307Z
+                    this.timestamp = PepsiUtil.parseFilebeatTimestamp(value);
+                    break;
+                default:
+                    try {
+                        // 默认为 ms, 用于测试数据
+                        this.timestamp = Long.parseLong(value, 10);
+                    } catch (Exception ignored) {
+                    }
+                    break;
+            }
 
+        }
+    }
+
+    public String getDomain() {
+        return domain;
+    }
+
+    public void setDomain(String domain) {
+        this.domain = domain;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    @JsonSetter(value = "request")
+    public void setPath(String value) {
+        this.path = value;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public long getDuration() {
+        return duration;
+    }
+
+    public void setDuration(long duration) {
+        this.duration = duration;
+    }
+
+    public String getUpstream() {
+        return upstream;
+    }
+
+    @JsonSetter(value = "upstreamaddr")
+    public void setUpstream(String upstream) {
+        this.upstream = upstream;
+    }
 }

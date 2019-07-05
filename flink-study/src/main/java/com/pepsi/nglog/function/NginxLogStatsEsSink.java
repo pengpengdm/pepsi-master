@@ -2,7 +2,7 @@ package com.pepsi.nglog.function;
 
 import com.pepsi.client.EsClient;
 import com.pepsi.nglog.dto.RichNginxLog;
-import com.pepsi.nglog.util.FlinkUtil;
+import com.pepsi.util.PepsiUtil;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
 import org.elasticsearch.common.xcontent.XContentBuilder;
@@ -75,17 +75,17 @@ public class NginxLogStatsEsSink extends RichSinkFunction<RichNginxLog> {
         EsClient client = ref.get();
         if (client != null) {
             try {
-                // 只记录需要进行查询的字段, 其他字段不写入ES
+
                 XContentBuilder builder = client.newIndexBuilder();
                 builder.startObject();
 
                 builder.field("timestamp", value.getTimestamp());
                 builder.field("status", value.getStatus());
                 builder.field("domain",value.getDomain());
-                if (FlinkUtil.checkNonEmpty(value.getPath())) {
+                if (PepsiUtil.checkNonEmpty(value.getPath())) {
                     builder.field("urlPath", value.getPath());
                 }
-                if (FlinkUtil.checkNonEmpty(value.getUpstream())) {
+                if (PepsiUtil.checkNonEmpty(value.getUpstream())) {
                     builder.field("upstreamAddr", value.getUpstream());
                 }
 

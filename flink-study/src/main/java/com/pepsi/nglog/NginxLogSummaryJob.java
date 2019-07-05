@@ -1,7 +1,8 @@
 package com.pepsi.nglog;
 
-import com.pepsi.filnktime.util.NgLogDataSource;
+import com.pepsi.nglog.codec.NginxLogJsonCodec;
 import com.pepsi.nglog.dto.RichNginxLog;
+import com.pepsi.nglog.function.NgLogDataSource;
 import com.pepsi.nglog.function.NginxLogStatsEsSink;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -9,6 +10,8 @@ import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
+import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumerBase;
+import org.apache.flink.streaming.connectors.kafka.KafkaTableSourceBase;
 import org.apache.flink.util.Collector;
 
 /**
@@ -30,7 +33,11 @@ public class NginxLogSummaryJob extends AbstractStreamingJob {
     @Override
     protected void preExecute() {
 
-        DataStreamSource<RichNginxLog> baseStream = env.addSource(new NgLogDataSource());
+        // Kafka source
+        NginxLogJsonCodec codec = new NginxLogJsonCodec();
+        FlinkKafkaConsumerBase<RichNginxLog> kafkaSource = createKafkaSource(codec);
+
+        DataStreamSource<RichNginxLog> baseStream = env.addSource(kafkaSource);
 
         String esServers = cfg.getString("es_nginx_servers", null);
 
@@ -40,7 +47,7 @@ public class NginxLogSummaryJob extends AbstractStreamingJob {
                     @Override
                     public void process(String s, Context context, Iterable<RichNginxLog> iterable, Collector<RichNginxLog> collector) throws Exception {
                        for(RichNginxLog nginxLog:iterable) {
-                           if(nginxLog.getPath().contains("09")) {
+                           if(nginxLog.getPath().equals("/mobile/activity/getActivityMetadata")) {
                                collector.collect(nginxLog);
                            }
                        }

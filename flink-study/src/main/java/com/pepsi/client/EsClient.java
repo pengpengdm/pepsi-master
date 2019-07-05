@@ -1,6 +1,6 @@
 package com.pepsi.client;
 
-import com.pepsi.nglog.util.FlinkUtil;
+import com.pepsi.util.PepsiUtil;
 import org.elasticsearch.action.bulk.BackoffPolicy;
 import org.elasticsearch.action.bulk.BulkProcessor;
 import org.elasticsearch.action.bulk.BulkRequest;
@@ -28,11 +28,13 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.InetSocketAddress;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * Created with IntelliJ IDEA.
@@ -40,7 +42,7 @@ import java.util.stream.Collectors;
  * Date: 2019-07-01 16:29
  * Description: No Description
  */
-public class EsClient  implements Closeable, Serializable {
+public class EsClient implements Closeable, Serializable {
     private static final long serialVersionUID = -1L;
 
     private static final Logger logger = LoggerFactory.getLogger(EsClient.class);
@@ -63,24 +65,17 @@ public class EsClient  implements Closeable, Serializable {
     private AtomicInteger state;
 
     private TransportClient es;
+
     private BulkProcessor processor;
 
     public EsClient(String servers, Map<String, String> params, boolean enableBulkProcessor) {
-        if (servers == null | servers.isEmpty()) {
+        if (servers == null || servers.isEmpty()) {
             throw new IllegalArgumentException("servers should not be empty.");
         }
         this.servers = servers;
         this.params = params != null ? params : Collections.emptyMap();
         this.enableBulkProcessor = enableBulkProcessor;
         this.state = new AtomicInteger(0);
-    }
-
-    public EsClient(String servers, Properties params) {
-        this(servers,
-                params != null ?
-                        params.entrySet().stream().collect(Collectors.toMap(e -> e.getKey().toString(), e -> e.getValue().toString()))
-                        : Collections.emptyMap(),
-                true);
     }
 
     public EsClient(String servers) {
@@ -105,7 +100,7 @@ public class EsClient  implements Closeable, Serializable {
                     .build();
 
             TransportClient transportClient = new PreBuiltTransportClient(settings);
-            for (InetSocketAddress addr : FlinkUtil.parseNetworkAddress(servers, 9200)) {
+            for (InetSocketAddress addr : PepsiUtil.parseNetworkAddress(servers, 9200)) {
                 transportClient.addTransportAddress(new InetSocketTransportAddress(addr));
             }
 

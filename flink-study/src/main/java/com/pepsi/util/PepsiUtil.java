@@ -1,4 +1,4 @@
-package com.pepsi.nglog.util;
+package com.pepsi.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -20,7 +20,7 @@ import java.util.*;
  * Date: 2019-06-29 22:40
  * Description: No Description
  */
-public final  class FlinkUtil {
+public final  class PepsiUtil {
 
     private static final Base64.Encoder codec = Base64.getEncoder();
 
@@ -30,7 +30,7 @@ public final  class FlinkUtil {
     // 精确到毫秒, e.g. "2019-06-07T07:03:00.445Z"
     public static final DateTimeFormatter ISO_INSTANT_MS = new DateTimeFormatterBuilder().parseCaseInsensitive().appendInstant(3).toFormatter();
 
-    private FlinkUtil() {
+    private PepsiUtil() {
     }
 
     public static ClassLoader getDefaultClassLoader() {
@@ -42,7 +42,7 @@ public final  class FlinkUtil {
         }
         if (cl == null) {
             // Use own class loader.
-            cl = FlinkUtil.class.getClassLoader();
+            cl = PepsiUtil.class.getClassLoader();
             if (cl == null) {
                 // May be the bootstrap ClassLoader
                 try {
