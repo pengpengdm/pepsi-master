@@ -73,6 +73,7 @@ public class RichNginxLog  implements Serializable {
     private int status;
     private long duration;
     private String upstream;
+    private Long timeWindow;
 
 
     public long getTimestamp() {
@@ -144,5 +145,14 @@ public class RichNginxLog  implements Serializable {
     @JsonSetter(value = "upstreamaddr")
     public void setUpstream(String upstream) {
         this.upstream = upstream;
+    }
+
+
+    public Long getTimeWindow() {
+        return timeWindow;
+    }
+
+    public void setTimeWindow(Long timeWindow) {
+        this.timeWindow = timeWindow;
     }
 }

@@ -2,8 +2,7 @@ package com.pepsi.nglog;
 
 import com.pepsi.nglog.codec.NginxLogJsonCodec;
 import com.pepsi.nglog.dto.RichNginxLog;
-import com.pepsi.nglog.function.NgLogDataSource;
-import com.pepsi.nglog.function.NginxLogStatsEsSink;
+import com.pepsi.nglog.function.NginxLogEsSink;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
@@ -11,7 +10,6 @@ import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumerBase;
-import org.apache.flink.streaming.connectors.kafka.KafkaTableSourceBase;
 import org.apache.flink.util.Collector;
 
 /**
@@ -57,7 +55,7 @@ public class NginxLogSummaryJob extends AbstractStreamingJob {
             processStream.print();
         }
         if (!dryrun) {
-            processStream .addSink(new NginxLogStatsEsSink(esServers,null, true,7));
+            processStream .addSink(new NginxLogEsSink(esServers,null, true,7));
         }
     }
 }
