@@ -1,7 +1,6 @@
-package com.pepsi.nglog.codec;
+package com.pepsi.bean.codec;
 
-import com.pepsi.nglog.dto.RichNginxLog;
-import com.pepsi.util.PepsiUtil;
+import com.pepsi.bean.RichNginxLog;
 import org.apache.flink.api.common.serialization.SerializationSchema;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.typeutils.TypeExtractor;
@@ -17,35 +16,42 @@ import java.io.IOException;
 /**
  * Created with IntelliJ IDEA.
  * User: pepsi
- * Date: 2019-07-04 11:56
+ * Date: 2019-09-20 14:37
  * Description: No Description
  */
-public class NginxLogJsonCodec implements KeyedDeserializationSchema<RichNginxLog>, SerializationSchema<RichNginxLog> {
+public class RichNginxLogCodec implements KeyedDeserializationSchema<RichNginxLog>, SerializationSchema<RichNginxLog> {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Logger logger = LoggerFactory.getLogger(NginxLogJsonCodec.class);
+    private static final Logger logger = LoggerFactory.getLogger(RichNginxLogCodec.class);
 
-    protected ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper = new ObjectMapper();
 
-    public NginxLogJsonCodec() {
+    public RichNginxLogCodec(){
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
     @Override
+    public byte[] serialize(RichNginxLog element) {
+        byte[] results = null;
+        try{
+            results = mapper.writeValueAsBytes(element);
+        }catch (Exception e){
+
+        }
+        return results;
+    }
+
+    @Override
     public RichNginxLog deserialize(byte[] messageKey, byte[] message, String topic, int partition, long offset) throws IOException {
         RichNginxLog m = null;
-        if (message != null && message.length > 0) {
+        if(message != null && message.length>0){
             try {
                 m = mapper.readValue(message, RichNginxLog.class);
-                if (!validate(m)) {
-                    m = null;
-                    logger.debug("Invalid Nginx access log");
-                }
-            } catch (Exception e) {
+            }catch (Exception e){
                 if (logger.isWarnEnabled()) {
-                    logger.warn("Fail to deserialize RichNginxLog", e);
+                    logger.warn("Fail to deserialize IotErrorLog", e);
                 }
             }
         }
@@ -58,25 +64,7 @@ public class NginxLogJsonCodec implements KeyedDeserializationSchema<RichNginxLo
     }
 
     @Override
-    public byte[] serialize(RichNginxLog element) {
-        byte[] result = null;
-        try {
-            result = mapper.writeValueAsBytes(element);
-        } catch (Exception e) {
-            if (logger.isWarnEnabled()) {
-                logger.warn("Fail to serialize object");
-            }
-        }
-        return result == null ? new byte[0] : result;
-    }
-
-    @Override
     public TypeInformation<RichNginxLog> getProducedType() {
         return TypeExtractor.getForClass(RichNginxLog.class);
-    }
-
-    public boolean validate(RichNginxLog data) {
-        // 由于目前运维上报的数据格式比较混乱, 我们需要过滤这些数据
-        return PepsiUtil.checkNonEmpty(data.getPath()) && PepsiUtil.checkNonEmpty(data.getDomain()) && data.getTimestamp() > 0;
     }
 }
