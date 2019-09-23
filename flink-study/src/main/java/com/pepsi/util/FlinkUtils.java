@@ -1,6 +1,8 @@
 package com.pepsi.util;
 
 import java.net.InetSocketAddress;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -8,10 +10,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalAccessor;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -90,5 +89,36 @@ public class FlinkUtils {
         return result;
     }
 
+
+    public static Charset getCharset() {
+        return StandardCharsets.UTF_8;
+    }
+
+    public static boolean checkNonEmpty(byte[] data) {
+        return data != null && data.length > 0;
+    }
+
+    public static boolean checkNonEmpty(String data) {
+        return data != null && data.length() > 0;
+    }
+
+    public static boolean checkNonEmpty(List<byte[]> data) {
+        return data != null && data.size() > 0;
+    }
+
+    public static boolean checkNonEmpty(Map<String, String[]> map) {
+        return map != null && map.size() > 0;
+    }
+
+    public static byte[][] toArray(List<byte[]> data) {
+        if (data != null && !data.isEmpty()) {
+            byte[][] result = new byte[data.size()][];
+            for (int i = 0; i < data.size(); i++) {
+                result[i] = data.get(i);
+            }
+            return result;
+        }
+        return null;
+    }
 
 }

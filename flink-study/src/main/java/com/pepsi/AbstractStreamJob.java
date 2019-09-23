@@ -29,7 +29,7 @@ public abstract class AbstractStreamJob implements Serializable {
 
     protected Properties kafkaConsumerCfg;
 
-    protected void init(String[] args){
+    protected void init(String[] args) throws Exception {
         config = ParameterTool.fromArgs(args).getConfiguration();
         env = config.getBoolean("local",false) ?
                 StreamExecutionEnvironment.getExecutionEnvironment() :
@@ -52,7 +52,7 @@ public abstract class AbstractStreamJob implements Serializable {
         postInit();
     }
 
-    protected abstract void postInit();
+    protected abstract void postInit() throws Exception;
 
 
     protected void execute() throws Exception {
@@ -89,7 +89,7 @@ public abstract class AbstractStreamJob implements Serializable {
      * @param maxSize
      * @return
      */
-    protected Properties loadConfig(String cfgName,long maxSize) throws IOException {
+    protected Properties loadConfig(String cfgName,long maxSize) throws Exception {
         String path = config.getString(cfgName, null);
         if (path == null) {
             throw new IllegalArgumentException(cfgName + " is missing");

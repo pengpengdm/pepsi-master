@@ -1,6 +1,5 @@
 package com.pepsi.util;
 
-import org.apache.flink.util.StringUtils;
 import org.elasticsearch.action.bulk.BackoffPolicy;
 import org.elasticsearch.action.bulk.BulkProcessor;
 import org.elasticsearch.action.bulk.BulkRequest;
@@ -42,21 +41,12 @@ import java.util.stream.Collectors;
  */
 public class EsClient implements Closeable, Serializable {
 
-    private static final long serialVersionUID = -5222683870097809633L;
+    private static final long serialVersionUID = -1L;
+
     private static final Logger logger = LoggerFactory.getLogger(EsClient.class);
 
-
-
-    //建议使用 TCP 9300
-    private String servers;
-
-    private boolean enableBulkProcessor = true;
-
     private Map<String, String> params;
-
-    private AtomicInteger state;
-
-    private TransportClient es;
+    private String servers;
 
     private int batchCount = 1000;
     private long batchSize = 5L * 1024L * 1024L;
@@ -67,12 +57,22 @@ public class EsClient implements Closeable, Serializable {
 
     private boolean compactEnabled;
 
+    private boolean enableBulkProcessor = true;
     private long closeTimeout = 5000;
 
+    private AtomicInteger state;
+
+    private TransportClient es;
     private BulkProcessor processor;
 
-    public EsClient(String servers) {
-        this(servers, Collections.emptyMap(), true);
+    public EsClient(String servers, Map<String, String> params, boolean enableBulkProcessor) {
+        if (servers == null | servers.isEmpty()) {
+            throw new IllegalArgumentException("servers should not be empty.");
+        }
+        this.servers = servers;
+        this.params = params != null ? params : Collections.emptyMap();
+        this.enableBulkProcessor = enableBulkProcessor;
+        this.state = new AtomicInteger(0);
     }
 
     public EsClient(String servers, Properties params) {
@@ -83,14 +83,8 @@ public class EsClient implements Closeable, Serializable {
                 true);
     }
 
-    public EsClient(String servers, Map prop,boolean processBulk) {
-        if(StringUtils.isNullOrWhitespaceOnly(servers)) {
-            throw new IllegalArgumentException("servers should not be empty.");
-        }
-        this.servers = servers;
-        this.params = params != null ? params : Collections.emptyMap();
-        this.enableBulkProcessor = enableBulkProcessor;
-        this.state = new AtomicInteger(0);
+    public EsClient(String servers) {
+        this(servers, Collections.emptyMap(), true);
     }
 
     public void start() throws IOException {
@@ -169,8 +163,6 @@ public class EsClient implements Closeable, Serializable {
         processor.add(es.prepareIndex(index, type).setSource(builder).request());
         return this;
     }
-
-
 
     public <T> List<T> get(String index, QueryBuilder query, int from, int size, long timeout, Function<String, T> processor) {
         List<T> result = Collections.emptyList();

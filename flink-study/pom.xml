@@ -93,6 +93,12 @@
       <version>3.2</version>
     </dependency>
 
+    <dependency>
+      <groupId>org.hbase</groupId>
+      <artifactId>asynchbase</artifactId>
+      <version>1.8.2</version>
+    </dependency>
+
   </dependencies>
 
   <build>
