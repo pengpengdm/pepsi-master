@@ -1,5 +1,6 @@
 package com.pepsi.util;
 
+import java.net.InetSocketAddress;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -7,7 +8,10 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalAccessor;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -48,6 +52,42 @@ public class FlinkUtils {
 
     public static String formatTimestamp(Long time) {
         return DATETIME_FORMATTER.format(LocalDateTime.ofInstant(Instant.ofEpochMilli(time), ZoneId.systemDefault()));
+    }
+
+    /***
+     * 将IP和端口转换成 InetSocketAddress
+     * @param connectionStr
+     * @param defaultPort
+     * @return
+     */
+    public static List<InetSocketAddress> parseNetworkAddress(String connectionStr, int defaultPort) {
+        if (connectionStr == null || connectionStr.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<InetSocketAddress> result = new ArrayList<>();
+        String[] hostPorts = connectionStr.split(",");
+        for (String it : hostPorts) {
+            String[] hp = it.split(":");
+            if (hp.length > 0) {
+                String host = hp[0];
+                host = host.trim();
+                if (!host.isEmpty()) {
+                    int port = defaultPort;
+                    if (hp.length > 1) {
+                        String s = hp[1];
+                        s = s.trim();
+                        if (!s.isEmpty()) {
+                            try {
+                                port = Integer.parseInt(s);
+                            } catch (NumberFormatException ignored) {
+                            }
+                        }
+                    }
+                    result.add(new InetSocketAddress(host, port));
+                }
+            }
+        }
+        return result;
     }
 
 
